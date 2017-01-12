@@ -120,13 +120,20 @@ class TelegramBotHandlers(object):
         def process_regimen_fiscal_step(message):
             self.partner['contact_address'] = message.text
             markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
-            with api.Environment.manage():
-                self.env = api.Environment(
-                      self.cr, self.uid, self.context)
-                regimenes = self.env['account.fiscal.position'].search([])
-                for regimen in regimenes:
-                    reg = types.KeyboardButton(str(regimen.name))
-                    markup.row(reg)
+            reg1 = types.KeyboardButton('ASALARIADOS')
+            reg2 = types.KeyboardButton('HONORARIOS')
+            reg3 = types.KeyboardButton('ARRENDAMIENTO')
+            reg4 = types.KeyboardButton('ACTIVIDAD EMPRESARIAL')
+            reg5 = types.KeyboardButton('INCORPORACION FISCAL')
+            reg6 = types.KeyboardButton('PERSONA MORAL REGIMEN GENERAL')
+            reg7 = types.KeyboardButton('PERSONA MORAL FINES NO LUCRATIVOS')
+            markup.row(reg1)
+            markup.row(reg2)
+            markup.row(reg3)
+            markup.row(reg4)
+            markup.row(reg5)
+            markup.row(reg6)
+            markup.row(reg7)
             regimen_fiscal = BOT.send_message(
                 message.chat.id,
                 'Seleccione un regimen fiscal', reply_markup=markup)
@@ -135,7 +142,7 @@ class TelegramBotHandlers(object):
                 process_validar_info_step)
 
         def process_validar_info_step(message):
-            self.partner['property_account_position_id'] = 1
+            self.partner['property_account_position_id'] = message.text
             markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
             afirmativo = types.KeyboardButton('SI')
             negativo = types.KeyboardButton('NO')
@@ -150,31 +157,29 @@ class TelegramBotHandlers(object):
                 '\nDireccion: ' +
                 str(self.partner['contact_address']).encode('utf-8') +
                 '\n Regimen fiscal: ' +
-                str(self.partner['property_account_position_id']).encode('utf-8'),
+                str(self.partner['property_account_position_id']).
+                encode('utf-8'),
                 reply_markup=markup)
             BOT.register_next_step_handler(
                 respuesta,
                 process_confirmacion_step)
 
         def process_confirmacion_step(message):
-            import ipdb; ipdb.set_trace()
-            with api.Environment.manage():
-                self.env = api.Environment(
-                    self.cr, self.uid, self.context)
-                with closing(self.env.cr):
-                    partner_id = self.env['res.partner'].create(self.partner)
-            pdf = open(
-                '/home/hector/Documentos/Jarsa_sistemas/B2C-Messenger/btoc/'
-                'telegram/extras/factura_electronica.pdf', 'rb')
-            xml = open(
-                '/home/hector/Documentos/Jarsa_sistemas/B2C-Messenger/btoc/'
-                'telegram/extras/factura_electronica.xml', 'rb')
-            BOT.send_document(message.chat.id, pdf)
-            BOT.send_document(message.chat.id, xml)
-            BOT.send_message(
-                message.chat.id,
-                '¿Que accion deseas realizar?',
-                reply_markup=markup)
+            if message.text == 'SI':
+                pdf = open(
+                    '/home/hector/Documentos/Jarsa_sistemas'
+                    '/B2C-Messenger/btoc/'
+                    'telegram/extras/factura_electronica.pdf', 'rb')
+                xml = open(
+                    '/home/hector/Documentos/Jarsa_sistemas/'
+                    'B2C-Messenger/btoc/'
+                    'telegram/extras/factura_electronica.xml', 'rb')
+                BOT.send_document(message.chat.id, pdf)
+                BOT.send_document(message.chat.id, xml)
+                BOT.send_message(
+                    message.chat.id,
+                    '¿Que accion deseas realizar?',
+                    reply_markup=markup)
 
         @BOT.message_handler(
             func=lambda message: message.text == '1.- Solicitar ticket')
