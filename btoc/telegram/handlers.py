@@ -120,13 +120,13 @@ class TelegramBotHandlers(object):
         def process_regimen_fiscal_step(message):
             self.partner['contact_address'] = message.text
             markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
-            reg1 = types.KeyboardButton('ASALARIADOS')
-            reg2 = types.KeyboardButton('HONORARIOS')
-            reg3 = types.KeyboardButton('ARRENDAMIENTO')
-            reg4 = types.KeyboardButton('ACTIVIDAD EMPRESARIAL')
-            reg5 = types.KeyboardButton('INCORPORACION FISCAL')
-            reg6 = types.KeyboardButton('PERSONA MORAL REGIMEN GENERAL')
-            reg7 = types.KeyboardButton('PERSONA MORAL FINES NO LUCRATIVOS')
+            reg1 = types.KeyboardButton('Asalariados')
+            reg2 = types.KeyboardButton('Honorarios')
+            reg3 = types.KeyboardButton('Arrendamiento')
+            reg4 = types.KeyboardButton('Actividad empresarial')
+            reg5 = types.KeyboardButton('Incorporacion fiscal')
+            reg6 = types.KeyboardButton('Persona moral regimen general')
+            reg7 = types.KeyboardButton('Persona moral fines no lucrativos')
             markup.row(reg1)
             markup.row(reg2)
             markup.row(reg3)
@@ -142,23 +142,23 @@ class TelegramBotHandlers(object):
                 process_validar_info_step)
 
         def process_validar_info_step(message):
-            self.partner['property_account_position_id'] = message.text
+            self.partner['property_account_position_id'] = message.text.encode('utf-8')
             markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
             afirmativo = types.KeyboardButton('SI')
             negativo = types.KeyboardButton('NO')
             markup.row(afirmativo, negativo)
+            mensaje = ('Son correctos estos datos?' +
+                       '\n\nRazon social: ' +
+                       str(self.partner['name']).encode('utf-8') +
+                       '\nRFC :' +
+                       str(self.partner['vat']).encode('utf-8') +
+                       '\nDireccion: ' +
+                       str(self.partner['contact_address']).encode('utf-8') +
+                       '\n regimen fiscal: ' +
+                       str(self.partner['property_account_position_id']).encode('utf-8'))
             respuesta = BOT.send_message(
                 message.chat.id,
-                '¿Son correctos estos datos?'
-                '\n\nRazon social: ' +
-                str(self.partner['name']).encode('utf-8') +
-                '\nRFC :' +
-                str(self.partner['vat']).encode('utf-8') +
-                '\nDireccion: ' +
-                str(self.partner['contact_address']).encode('utf-8') +
-                '\n Regimen fiscal: ' +
-                str(self.partner['property_account_position_id']).
-                encode('utf-8'),
+                mensaje,
                 reply_markup=markup)
             BOT.register_next_step_handler(
                 respuesta,
