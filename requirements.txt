@@ -1,1 +1,4 @@
 pyTelegramBotAPI
+pyOpenSSL
+ndg-httpsclient
+pyasn1

@@ -142,7 +142,8 @@ class TelegramBotHandlers(object):
                 process_validar_info_step)
 
         def process_validar_info_step(message):
-            self.partner['property_account_position_id'] = message.text.encode('utf-8')
+            self.partner['property_account_position_id'] = (
+                message.text.encode('utf-8'))
             markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
             afirmativo = types.KeyboardButton('SI')
             negativo = types.KeyboardButton('NO')
@@ -155,7 +156,9 @@ class TelegramBotHandlers(object):
                        '\nDireccion: ' +
                        str(self.partner['contact_address']).encode('utf-8') +
                        '\n regimen fiscal: ' +
-                       str(self.partner['property_account_position_id']).encode('utf-8'))
+                       str(
+                        self.partner['property_account_position_id']).
+                       encode('utf-8'))
             respuesta = BOT.send_message(
                 message.chat.id,
                 mensaje,
